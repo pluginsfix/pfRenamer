@@ -1,0 +1,59 @@
+no-permission:
+  - "[message] &#FB8808▶ &fНедостаточно &#FB8808прав на использование &fданной команды!"
+  - "[sound] BLOCK_ANVIL_LAND"
+
+help:
+  - "[message] "
+  - "[message] &#FFFF00▶ &fУправление плагином &#FFFF00pfRenamer&f:"
+  - "[message] "
+  - "[message]   &#FFFF00◆ &f/pfrenamer run &f— выполнить замену во всех плагинах"
+  - "[message]   &#FFFF00◆ &f/pfrenamer check &f— проверить количество совпадений без записи"
+  - "[message]   &#FFFF00◆ &f/pfrenamer reload &f— перезагрузить конфигурацию"
+  - "[message] "
+  - "[sound] UI_BUTTON_CLICK"
+
+reload-success:
+  - "[message] &#FFFF00◆ &fКонфигурация &#FFFF00pfRenamer &fуспешно &#FFFF00перезагружена&f!"
+  - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP"
+
+process-started:
+  - "[message] &#FFFF00▶ &fЗапущен процесс сканирования и замены файлов в папке плагинов..."
+  - "[sound] UI_BUTTON_CLICK"
+
+check-started:
+  - "[message] &#FFFF00▶ &fЗапущен процесс проверки файлов без перезаписи..."
+  - "[sound] UI_BUTTON_CLICK"
+
+process-success:
+  - "[message] "
+  - "[message] &#FFFF00▶ &fЗамена текста успешно &#FFFF00завершена&f!"
+  - "[message] "
+  - "[message]   &#FFFF00◆ &fПросканировано файлов: &#FFFF00{scanned}"
+  - "[message]   &#FFFF00◆ &fИзменено файлов: &#FFFF00{modified}"
+  - "[message]   &#FFFF00◆ &fВсего замен: &#FFFF00{replacements}"
+  - "[message]   &#FFFF00◆ &fЗатраченное время: &#FFFF00{time} мс"
+  - "[message] "
+  - "[sound] ENTITY_PLAYER_LEVELUP"
+
+check-success:
+  - "[message] "
+  - "[message] &#FFFF00▶ &fРезультаты предварительной &#FFFF00проверки&f:"
+  - "[message] "
+  - "[message]   &#FFFF00◆ &fПросканировано файлов: &#FFFF00{scanned}"
+  - "[message]   &#FFFF00◆ &fФайлов с совпадениями: &#FFFF00{modified}"
+  - "[message]   &#FFFF00◆ &fНайдено совпадений: &#FFFF00{replacements}"
+  - "[message]   &#FFFF00◆ &fЗатраченное время: &#FFFF00{time} мс"
+  - "[message] "
+  - "[sound] ENTITY_EXPERIENCE_ORB_PICKUP"
+
+no-replacements:
+  - "[message] &#FB8808▶ &fВ файлах плагинов не найдено строк для замены."
+  - "[sound] BLOCK_NOTE_BLOCK_BASS"
+
+process-error:
+  - "[message] &#FB8808▶ &fПроизошла ошибка при обработке файлов: &#FB8808{error}"
+  - "[sound] BLOCK_ANVIL_LAND"
+
+already-running:
+  - "[message] &#FB8808▶ &fПроцесс замены уже запущен! Дождитесь завершения текущей операции."
+  - "[sound] BLOCK_ANVIL_LAND"

@@ -1,0 +1,24 @@
+config-version: 1
+
+file-extensions:
+  - ".yml"
+  - ".yaml"
+  - ".json"
+  - ".txt"
+  - ".toml"
+  - ".properties"
+  - ".conf"
+  - ".cfg"
+  - ".xml"
+  - ".csv"
+
+ignored-directories:
+  - "pfRenamer"
+  - "bStats"
+
+replacements:
+  "ᴡᴀɴᴅʏɢʀɪᴇꜰ": "ɪᴄᴇᴡᴏʀʟᴅ"
+  "www.wandygrief.ru": "shop.iceworld.pw"
+  "wandygrief.ru": "shop.iceworld.pw"
+  "wandy.trademc.org/": "shop.iceworld.pw"
+  "wandy.trademc.org": "shop.iceworld.pw"

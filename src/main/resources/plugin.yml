@@ -1,0 +1,12 @@
+name: pfRenamer
+version: '${project.version}'
+main: pluginsfix.pfrenamer.pfRenamer
+api-version: '1.21'
+author: pluginsfix
+commands:
+  pfrenamer:
+    description: Text and domain renamer for all plugin configs
+    permission: pfrenamer.admin
+    aliases:
+      - renamer
+      - pfrename
