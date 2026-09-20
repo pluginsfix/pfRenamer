@@ -9,10 +9,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class RenamerEngine {
     private static final long MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+    private static final Pattern INNER_MEMORY_SECTION_PATTERN = Pattern.compile("MemorySection\\[path='([^']*)',\\s*root='YamlConfiguration'\\]");
+    private static final Pattern CORRUPTED_PREFIX_PATTERN = Pattern.compile("(?i)(?:replacements\\.|mc\\.|www\\.)+(shop\\.iceworld\\.pw|ɪᴄᴇᴡᴏʀʟᴅ)(?:\\.(?:ru|org|com|net|pw))*");
 
     private final List<ReplacementRule> rules;
     private final Set<String> allowedExtensions;
@@ -28,7 +33,7 @@ public final class RenamerEngine {
             .toList();
         this.allowedExtensions = allowedExtensions.stream()
             .map(String::toLowerCase)
-            .collect(java.util.stream.Collectors.toUnmodifiableSet());
+            .collect(Collectors.toUnmodifiableSet());
         this.ignoredDirectories = Set.copyOf(ignoredDirectories);
     }
 
@@ -96,9 +101,15 @@ public final class RenamerEngine {
 
     private int processFile(Path file, boolean dryRun) {
         try {
-            String content = Files.readString(file, StandardCharsets.UTF_8);
-            String currentContent = content;
+            String originalContent = Files.readString(file, StandardCharsets.UTF_8);
+            String currentContent = originalContent;
             int fileReplacements = 0;
+
+            String cleanedContent = repairMemorySections(currentContent);
+            if (!cleanedContent.equals(currentContent)) {
+                fileReplacements++;
+                currentContent = cleanedContent;
+            }
 
             for (ReplacementRule rule : rules) {
                 String target = rule.target();
@@ -111,7 +122,15 @@ public final class RenamerEngine {
                 }
             }
 
-            if (fileReplacements > 0 && !dryRun) {
+            String postCleaned = cleanupArtifacts(currentContent);
+            if (!postCleaned.equals(currentContent)) {
+                if (fileReplacements == 0) {
+                    fileReplacements++;
+                }
+                currentContent = postCleaned;
+            }
+
+            if (!currentContent.equals(originalContent) && !dryRun) {
                 Files.writeString(
                     file,
                     currentContent,
@@ -126,6 +145,59 @@ public final class RenamerEngine {
         } catch (IOException e) {
             return 0;
         }
+    }
+
+    private String repairMemorySections(String content) {
+        if (!content.contains("MemorySection[")) {
+            return content;
+        }
+
+        String result = content;
+        int maxIterations = 50;
+        while (result.contains("MemorySection[") && maxIterations-- > 0) {
+            Matcher matcher = INNER_MEMORY_SECTION_PATTERN.matcher(result);
+            if (!matcher.find()) {
+                break;
+            }
+
+            StringBuffer buffer = new StringBuffer();
+            do {
+                String path = matcher.group(1);
+                String resolved = resolveMemorySectionTarget(path);
+                matcher.appendReplacement(buffer, Matcher.quoteReplacement(resolved));
+            } while (matcher.find());
+            matcher.appendTail(buffer);
+            result = buffer.toString();
+        }
+
+        return cleanupArtifacts(result);
+    }
+
+    private String resolveMemorySectionTarget(String path) {
+        if (path.contains("ᴡᴀɴᴅʏɢʀɪᴇꜰ")) {
+            return "ɪᴄᴇᴡᴏʀʟᴅ";
+        }
+        return "shop.iceworld.pw";
+    }
+
+    private String cleanupArtifacts(String content) {
+        String result = content;
+        result = result.replace("shop.iceworld.pw.ru", "shop.iceworld.pw");
+        result = result.replace("replacements.shop.iceworld.pw", "shop.iceworld.pw");
+        result = result.replace("replacements.ɪᴄᴇᴡᴏʀʟᴅ", "ɪᴄᴇᴡᴏʀʟᴅ");
+        result = result.replace("mc.shop.iceworld.pw.ru", "shop.iceworld.pw");
+        result = result.replace("mc.shop.iceworld.pw", "shop.iceworld.pw");
+        result = result.replace("www.shop.iceworld.pw.ru", "shop.iceworld.pw");
+        result = result.replace("www.shop.iceworld.pw", "shop.iceworld.pw");
+        result = result.replace("https://shop.iceworld.pw.ru", "https://shop.iceworld.pw");
+        result = result.replace("http://shop.iceworld.pw.ru", "http://shop.iceworld.pw");
+
+        Matcher prefixMatcher = CORRUPTED_PREFIX_PATTERN.matcher(result);
+        if (prefixMatcher.find()) {
+            result = prefixMatcher.replaceAll("$1");
+        }
+
+        return result;
     }
 
     private int countOccurrences(String text, String target) {

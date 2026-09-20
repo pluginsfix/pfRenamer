@@ -7,6 +7,7 @@ import pluginsfix.pfrenamer.config.RenamerConfig;
 import pluginsfix.pfrenamer.domain.RenamerEngine;
 import pluginsfix.pfrenamer.text.Messages;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public final class pfRenamer extends JavaPlugin {
@@ -28,8 +29,8 @@ public final class pfRenamer extends JavaPlugin {
     }
 
     public void reloadPlugin() {
-        reloadConfig();
-        RenamerConfig config = RenamerConfig.fromBukkit(getConfig());
+        File configFile = new File(getDataFolder(), "config.yml");
+        RenamerConfig config = RenamerConfig.load(configFile, getResource("config.yml"));
         this.engine = new RenamerEngine(
             config.rules(),
             config.fileExtensions(),
