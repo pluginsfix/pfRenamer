@@ -34,7 +34,8 @@ public final class pfRenamer extends JavaPlugin {
         this.engine = new RenamerEngine(
             config.rules(),
             config.fileExtensions(),
-            config.ignoredDirectories()
+            config.ignoredDirectories(),
+            config.createBackup()
         );
         if (this.messages != null) {
             this.messages.reload();

@@ -16,7 +16,8 @@ import java.util.Set;
 public record RenamerConfig(
     Set<String> fileExtensions,
     Set<String> ignoredDirectories,
-    List<ReplacementRule> rules
+    List<ReplacementRule> rules,
+    boolean createBackup
 ) {
     public static RenamerConfig load(File configFile, InputStream fallbackStream) {
         Yaml yaml = new Yaml();
@@ -66,6 +67,12 @@ public record RenamerConfig(
             ignored.addAll(Set.of("pfRenamer", "bStats"));
         }
 
+        boolean backup = false;
+        Object backupObj = data.get("create-backup");
+        if (backupObj instanceof Boolean b) {
+            backup = b;
+        }
+
         List<ReplacementRule> rules = new ArrayList<>();
         Object replacementsObj = data.get("replacements");
         if (replacementsObj instanceof Map<?, ?> map) {
@@ -104,14 +111,15 @@ public record RenamerConfig(
             rules.addAll(defaultRules());
         }
 
-        return new RenamerConfig(Set.copyOf(extensions), Set.copyOf(ignored), List.copyOf(rules));
+        return new RenamerConfig(Set.copyOf(extensions), Set.copyOf(ignored), List.copyOf(rules), backup);
     }
 
     private static RenamerConfig defaultFallback() {
         return new RenamerConfig(
             Set.of(".yml", ".yaml", ".json", ".txt", ".toml", ".properties", ".conf", ".cfg", ".xml", ".csv"),
             Set.of("pfRenamer", "bStats"),
-            defaultRules()
+            defaultRules(),
+            false
         );
     }
 
